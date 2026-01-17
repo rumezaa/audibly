@@ -11,9 +11,9 @@ function About() {
         <Butterfly className="header-butterfly" size={50} />
 
         <div className="container">
-          <span className="section-badge">Our Story</span>
-          <h1>About Audibly</h1>
-          <p>Our mission, our process, our team.</p>
+          <span className="section-badge">Our Mission</span>
+          <h1>Eliminating Access Bias in the Workplace</h1>
+          <p>Building technology that creates truly inclusive meeting cultures.</p>
         </div>
 
         <Wave className="header-wave" />
@@ -23,11 +23,11 @@ function About() {
       <section className="section">
         <div className="container">
           <div className="philosophy-intro">
-            <h2>Why We Built It This Way</h2>
+            <h2>Designing for Workplace Equity</h2>
             <p className="lead">
-              Every design decision in Audibly stems from one principle:
-              <strong> accessibility should be invisible</strong>. When it works perfectly,
-              you forget it's there.
+              Access bias happens when workplace tools and practices systematically exclude
+              certain employees. Every design decision in Audibly aims to <strong>eliminate
+              these barriers</strong>—so meetings become spaces where everyone contributes equally.
             </p>
           </div>
 
@@ -39,16 +39,16 @@ function About() {
                   <polyline points="12,6 12,12 16,14"/>
                 </svg>
               </div>
-              <h3>Zero Friction</h3>
+              <h3>Immediate Inclusion</h3>
               <p>
-                We obsessed over removing every unnecessary click, setting, and decision.
-                Audibly should work the moment you need it, not after configuration.
-                Install it, and it's ready.
+                Bias removal shouldn't require IT tickets or manager approval.
+                Audibly works the moment an employee needs it—because access delayed
+                is access denied.
               </p>
             </div>
 
             <div className="principle-card">
-              <div className="principle-icon gradient-grapefruit">
+              <div className="principle-icon gradient-teal">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
@@ -56,11 +56,11 @@ function About() {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
               </div>
-              <h3>Universal by Default</h3>
+              <h3>Equity by Design</h3>
               <p>
-                Instead of building a "normal" app and adding accessibility features,
-                we started with accessibility as the foundation. High contrast, keyboard
-                navigation, screen reader support—these are core.
+                Rather than retrofitting inclusion, we built it into the foundation.
+                Every employee gets the same quality meeting experience—no special
+                requests, no stigma, no second-class participation.
               </p>
             </div>
 
@@ -70,11 +70,11 @@ function About() {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
               </div>
-              <h3>Privacy as Architecture</h3>
+              <h3>Confidential by Default</h3>
               <p>
-                We chose local processing over cloud services deliberately.
-                Your conversations are yours. By keeping everything on-device,
-                we eliminated privacy concerns at the architectural level.
+                Meeting content stays on the employee's device—never transmitted
+                to external servers. Board discussions, HR conversations, and
+                strategic planning remain private.
               </p>
             </div>
 
@@ -85,11 +85,11 @@ function About() {
                   <path d="M9 9h.01M15 9h.01M9 15h6"/>
                 </svg>
               </div>
-              <h3>Quiet Presence</h3>
+              <h3>Professional Integration</h3>
               <p>
-                Audibly lives in the system tray because accessibility tools shouldn't
-                demand attention. It runs in the background, consuming minimal resources,
-                appearing only when needed.
+                Audibly integrates seamlessly into corporate workflows—no disruptive
+                overlays or attention-grabbing interfaces. It's enterprise software
+                that respects the professional environment.
               </p>
             </div>
           </div>
@@ -179,7 +179,7 @@ function About() {
             <span className="section-badge">Team</span>
             <h2 className="section-title">The People Behind Audibly</h2>
             <p className="section-subtitle">
-              Built during HackTheBias 2026 by a team passionate about inclusive technology.
+              Built during HackTheBias 2026 by a team committed to eliminating workplace access bias.
             </p>
           </div>
 
@@ -194,7 +194,7 @@ function About() {
             </div>
 
             <div className="team-card">
-              <div className="team-avatar gradient-grapefruit">
+              <div className="team-avatar gradient-teal">
                 <span>TM</span>
               </div>
               <h3>Team Member 2</h3>
@@ -235,11 +235,12 @@ function About() {
             <Butterfly className="mission-butterfly-1" size={40} />
             <Butterfly className="mission-butterfly-2" size={55} />
 
-            <h2>Our Mission</h2>
+            <h2>Our Commitment</h2>
             <blockquote>
-              "Communication is a fundamental human right. Technology should bridge gaps,
-              not create them. We're building tools that make every conversation accessible
-              to everyone, regardless of how they hear, speak, or understand."
+              "Access bias in meetings isn't just an inconvenience—it's a systemic barrier
+              that limits careers, silences perspectives, and costs organizations their
+              best ideas. We're building technology that removes these barriers entirely,
+              creating workplaces where every employee can participate, contribute, and advance."
             </blockquote>
           </div>
         </div>
@@ -251,10 +252,10 @@ function About() {
       <section className="section cta-section">
         <div className="container">
           <div className="cta-content">
-            <h2>Join Our Mission</h2>
-            <p>Try Audibly and help us make communication accessible for all.</p>
+            <h2>Join the Movement Against Access Bias</h2>
+            <p>Transform your organization's meeting culture today.</p>
             <Link to="/download" className="btn btn-white btn-lg">
-              Get Audibly
+              Get Audibly for Your Organization
             </Link>
           </div>
         </div>

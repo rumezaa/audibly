@@ -13,14 +13,15 @@ function Home() {
 
         <div className="container">
           <div className="hero-content">
-            <span className="hero-badge">Workplace Accessibility Solution</span>
+            <span className="hero-badge">Eliminating Access Bias in the Workplace</span>
             <h1 className="hero-title">
-              Equal Access to <span className="gradient-text">Every Meeting</span>
+              Every Voice Heard in <span className="gradient-text">Every Meeting</span>
             </h1>
             <p className="hero-subtitle">
-              Audibly ensures deaf and hard-of-hearing employees can fully participate
-              in meetings, presentations, and daily workplace communication. Real-time
-              captions, ASL recognition, and translation—integrated seamlessly into your workflow.
+              Access bias excludes 15% of the workforce from full meeting participation.
+              Audibly removes that barrier—providing real-time captions, ASL recognition,
+              and translation so every employee can contribute equally, regardless of
+              how they hear or communicate.
             </p>
             <div className="hero-actions">
               <Link to="/download" className="btn btn-primary btn-lg">
@@ -35,16 +36,16 @@ function Home() {
             </div>
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">15%</span>
-                <span className="stat-label">of global workforce has hearing loss</span>
+                <span className="stat-number">430M</span>
+                <span className="stat-label">people globally face hearing-related access bias</span>
               </div>
               <div className="stat">
                 <span className="stat-number">76%</span>
-                <span className="stat-label">report workplace communication barriers</span>
+                <span className="stat-label">feel excluded from workplace meetings</span>
               </div>
               <div className="stat">
-                <span className="stat-number">$0</span>
-                <span className="stat-label">Cost to deploy</span>
+                <span className="stat-number">100%</span>
+                <span className="stat-label">meeting inclusion with Audibly</span>
               </div>
             </div>
           </div>
@@ -83,10 +84,11 @@ function Home() {
       <section className="section problem-section">
         <div className="container">
           <div className="section-header">
-            <span className="section-badge">The Workplace Reality</span>
-            <h2 className="section-title">Meetings Aren't Accessible by Default</h2>
+            <span className="section-badge">The Access Bias Problem</span>
+            <h2 className="section-title">Meetings Create Systemic Exclusion</h2>
             <p className="section-subtitle">
-              Employees with hearing loss face daily barriers that limit their contributions and career growth.
+              When meetings aren't accessible, organizations inadvertently create bias against employees
+              with hearing differences—limiting their contributions, visibility, and career advancement.
             </p>
           </div>
 
@@ -98,11 +100,11 @@ function Home() {
                   <path d="M8 21h8M12 17v4"/>
                 </svg>
               </div>
-              <h3>Video Calls Without Captions</h3>
+              <h3>Virtual Meeting Exclusion</h3>
               <p>
-                Most video conferencing platforms offer limited or inaccurate auto-captions.
-                Employees miss critical information, action items, and context—leading to
-                mistakes and exclusion from key decisions.
+                Video conferencing auto-captions are unreliable. Employees miss critical
+                decisions, action items, and strategic discussions—creating an uneven
+                playing field where some voices matter less than others.
               </p>
             </div>
 
@@ -115,11 +117,11 @@ function Home() {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
               </div>
-              <h3>In-Person Meeting Barriers</h3>
+              <h3>Conference Room Bias</h3>
               <p>
-                Conference rooms, team huddles, and impromptu discussions happen without
-                interpretation services. Deaf employees are forced to rely on incomplete
-                notes or ask colleagues to repeat themselves.
+                In-person meetings, team huddles, and boardroom discussions happen
+                without accommodation. Employees with hearing differences are systematically
+                excluded from the conversations that shape company direction.
               </p>
             </div>
 
@@ -131,11 +133,11 @@ function Home() {
                   <path d="M6 20v-4"/>
                 </svg>
               </div>
-              <h3>Career Advancement Gap</h3>
+              <h3>Leadership Pipeline Bias</h3>
               <p>
-                When communication tools fail, employees with hearing loss are overlooked
-                for promotions, excluded from leadership conversations, and
-                underrepresented in senior roles.
+                Access barriers compound over time. Employees who can't fully participate
+                in meetings are passed over for promotions, excluded from leadership
+                opportunities, and remain underrepresented at every level.
               </p>
             </div>
           </div>
@@ -152,41 +154,42 @@ function Home() {
         <div className="container">
           <div className="solution-content">
             <div className="solution-text">
-              <span className="section-badge">The Solution</span>
-              <h2 className="section-title left-align">Workplace Accessibility, Automated</h2>
+              <span className="section-badge">Removing the Bias</span>
+              <h2 className="section-title left-align">Equal Meeting Participation, Automated</h2>
               <p className="solution-lead">
-                Audibly runs in the background on Windows workstations, providing instant
-                accessibility for any audio or video content—no IT infrastructure changes required.
+                Audibly eliminates access bias by running silently on Windows workstations,
+                ensuring every employee can fully participate in any meeting—virtual or in-person—
+                without requiring IT infrastructure changes or special accommodations.
               </p>
 
               <div className="solution-steps">
                 <div className="solution-step">
                   <div className="step-number">1</div>
                   <div className="step-content">
-                    <h4>Capture System Audio</h4>
-                    <p>Automatically transcribes audio from Zoom, Teams, Slack, or any application with high accuracy.</p>
+                    <h4>Capture Meeting Audio</h4>
+                    <p>Instantly transcribes Zoom, Teams, Meet, or any conferencing platform with enterprise-grade accuracy.</p>
                   </div>
                 </div>
 
                 <div className="solution-step">
                   <div className="step-number">2</div>
                   <div className="step-content">
-                    <h4>Recognize ASL Input</h4>
-                    <p>Employees who sign can contribute to meetings—Audibly translates ASL gestures to text in real-time.</p>
+                    <h4>Enable Two-Way Participation</h4>
+                    <p>ASL users can contribute equally—Audibly translates sign language to text so their voice is part of the meeting.</p>
                   </div>
                 </div>
 
                 <div className="solution-step">
                   <div className="step-number">3</div>
                   <div className="step-content">
-                    <h4>Display Professional Captions</h4>
-                    <p>Clean, customizable overlay that doesn't interfere with your work. Position it anywhere on screen.</p>
+                    <h4>Professional Meeting Overlay</h4>
+                    <p>Non-intrusive captions that integrate seamlessly with your meeting workflow. Enterprise-ready from day one.</p>
                   </div>
                 </div>
               </div>
 
               <p className="solution-footer">
-                Zero configuration. No subscription fees. Deploy to individual workstations in minutes.
+                Zero configuration. No IT overhead. Deploy organization-wide and create an inclusive meeting culture.
               </p>
             </div>
 
@@ -229,10 +232,10 @@ function Home() {
           <Butterfly className="cta-butterfly-2" size={55} />
 
           <div className="cta-content">
-            <h2>Make Your Workplace Accessible</h2>
-            <p>Give every employee the tools to contribute fully.</p>
+            <h2>Eliminate Access Bias in Your Organization</h2>
+            <p>Create meetings where every employee can contribute equally.</p>
             <Link to="/download" className="btn btn-white btn-lg">
-              Get Audibly for Your Team
+              Deploy Audibly Enterprise
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>

@@ -25,7 +25,7 @@ function Footer() {
               </svg>
               <span>Audibly</span>
             </Link>
-            <p>Breaking barriers in communication through accessible technology.</p>
+            <p>Eliminating access bias in workplace meetings through inclusive technology.</p>
           </div>
 
           <nav className="footer-nav">
@@ -44,7 +44,7 @@ function Footer() {
 
         <div className="footer-bottom">
           <p>Built for <strong>HackTheBias 2026</strong></p>
-          <p>Creating technology that includes everyone.</p>
+          <p>Creating meeting equity for every organization.</p>
         </div>
       </div>
     </footer>

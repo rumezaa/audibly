@@ -10,10 +10,10 @@
   --color-secondary-light: #bae6fd;
   --color-secondary-dark: #38bdf8;
 
-  /* Tertiary - Grapefruit/coral */
-  --color-tertiary: #fb7185;
-  --color-tertiary-light: #fda4af;
-  --color-tertiary-dark: #f43f5e;
+  /* Tertiary - Professional teal */
+  --color-tertiary: #14b8a6;
+  --color-tertiary-light: #5eead4;
+  --color-tertiary-dark: #0d9488;
 
   /* Neutrals */
   --color-white: #ffffff;
@@ -315,7 +315,7 @@ h4 { font-size: var(--font-size-lg); }
   background: var(--gradient-secondary);
 }
 
-.gradient-grapefruit {
+.gradient-teal {
   background: var(--gradient-tertiary);
 }
 

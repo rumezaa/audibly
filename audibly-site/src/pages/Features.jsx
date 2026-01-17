@@ -11,9 +11,9 @@ function Features() {
         <Butterfly className="header-butterfly" size={45} />
 
         <div className="container">
-          <span className="section-badge">Enterprise Features</span>
-          <h1>Built for the Modern Workplace</h1>
-          <p>Professional-grade accessibility tools that integrate with your existing workflow.</p>
+          <span className="section-badge">Meeting Inclusion Platform</span>
+          <h1>End Access Bias in Every Meeting</h1>
+          <p>Enterprise-grade tools that ensure every employee participates equally—from standups to board meetings.</p>
         </div>
 
         <Wave className="header-wave" />
@@ -24,13 +24,13 @@ function Features() {
         <div className="container">
           <div className="feature-row">
             <div className="feature-content">
-              <span className="feature-tag">Inclusive Communication</span>
-              <h2>ASL Recognition for Meetings</h2>
+              <span className="feature-tag">Remove Participation Bias</span>
+              <h2>ASL Recognition for Full Meeting Inclusion</h2>
               <p>
-                Employees who use American Sign Language can actively participate in meetings
-                without an interpreter present. Audibly's computer vision technology recognizes
-                ASL gestures and converts them to text, enabling two-way communication in
-                real-time.
+                Sign language users are often excluded from spontaneous meetings and discussions.
+                Audibly's computer vision recognizes ASL in real-time and converts it to text,
+                ensuring these employees have an equal voice in every conversation—no interpreter
+                scheduling required.
               </p>
               <ul className="feature-list">
                 <li>
@@ -80,12 +80,12 @@ function Features() {
         <div className="container">
           <div className="feature-row reverse">
             <div className="feature-content">
-              <span className="feature-tag">Real-Time Transcription</span>
-              <h2>Accurate Speech-to-Text</h2>
+              <span className="feature-tag">Remove Information Bias</span>
+              <h2>Enterprise-Grade Meeting Transcription</h2>
               <p>
-                Audibly captures audio from any application on your workstation and transcribes
-                it with enterprise-grade accuracy. Meeting discussions, training videos, webinars—
-                everything becomes accessible.
+                When employees miss what's said in meetings, they're excluded from decisions.
+                Audibly provides accurate, real-time captions for every meeting platform—ensuring
+                no one is left out of critical discussions, strategic planning, or team updates.
               </p>
               <ul className="feature-list">
                 <li>
@@ -115,7 +115,7 @@ function Features() {
               </ul>
             </div>
             <div className="feature-visual">
-              <div className="feature-icon-wrapper gradient-grapefruit">
+              <div className="feature-icon-wrapper gradient-teal">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
@@ -136,12 +136,12 @@ function Features() {
         <div className="container">
           <div className="feature-row">
             <div className="feature-content">
-              <span className="feature-tag">Global Teams</span>
-              <h2>Multi-Language Support</h2>
+              <span className="feature-tag">Remove Language Bias</span>
+              <h2>Multi-Language Meeting Support</h2>
               <p>
-                For organizations with international teams, Audibly can translate captions
-                into the employee's preferred language. Reduce language barriers and ensure
-                consistent understanding across your global workforce.
+                Global organizations often have employees who struggle in English-dominant
+                meetings. Audibly translates captions in real-time, ensuring non-native speakers
+                can fully participate and contribute their expertise without language barriers.
               </p>
               <ul className="feature-list">
                 <li>
@@ -191,7 +191,7 @@ function Features() {
         <div className="container">
           <div className="section-header">
             <span className="section-badge">Enterprise Ready</span>
-            <h2 className="section-title">Designed for Business</h2>
+            <h2 className="section-title">Built for Corporate Meeting Culture</h2>
           </div>
 
           <div className="features-grid">
@@ -248,10 +248,10 @@ function Features() {
         <div className="container">
           <Butterfly className="cta-butterfly" size={50} />
           <div className="cta-content">
-            <h2>Ready to Enable Your Workforce?</h2>
-            <p>Deploy Audibly and ensure every employee can participate fully.</p>
+            <h2>Ready to Build an Inclusive Meeting Culture?</h2>
+            <p>Remove access bias and unlock the full potential of every employee.</p>
             <Link to="/download" className="btn btn-white btn-lg">
-              Get Started
+              Request Enterprise Demo
             </Link>
           </div>
         </div>
