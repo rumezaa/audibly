@@ -1,5 +1,3 @@
-# HEADS UP! This might only work on Mac OS.
-
 import cv2
 import pyvirtualcam
 from pyvirtualcam import PixelFormat
@@ -9,6 +7,7 @@ import threading
 import queue
 import sys
 import time
+import platform
 from vosk import KaldiRecognizer, Model
 
 # Vosk model settings
@@ -18,8 +17,13 @@ SAMPLE_RATE = 16000
 # Set this to None to use default device, or specify device index/name
 DEVICE = None  # Change to device index (int) or device name (str) to use external mic
 
-# Open real webcam
-cap = cv2.VideoCapture(1, cv2.CAP_AVFOUNDATION)
+# Open real webcam - platform-specific
+if platform.system() == "Windows":
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # DirectShow on Windows, index 0 is default camera
+elif platform.system() == "Darwin":  # macOS
+    cap = cv2.VideoCapture(1, cv2.CAP_AVFOUNDATION)
+else:  # Linux
+    cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
     print("Error: Could not open webcam")
