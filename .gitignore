@@ -52,3 +52,6 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Vosk model
+vosk-model-small-en-us-0.15/
