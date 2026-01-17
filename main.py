@@ -85,7 +85,19 @@ def main():
     if not cap.isOpened():
         raise RuntimeError("Could not open webcam.")
     
+    # Get video properties
+    fps = int(cap.get(cv2.CAP_PROP_FPS)) or 30
+    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+    # Setup virtual camera OUTSIDE the loop
+    cam = pyvirtualcam.Camera(
+        width=w,
+        height=h,
+        fps=fps,
+        fmt=PixelFormat.BGR
+    )
+    print(f"Virtual camera started: {cam.device}")
 
     # load media pipe hands - this will help us focus on the hand
     mp_hands = mp.solutions.hands
@@ -109,16 +121,6 @@ def main():
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = hands.process(frame_rgb)
 
-        #setup virtual camera (OBS)
-        fps = 30
-        cam = pyvirtualcam.Camera(
-            width=w,
-            height=h,
-            fps=fps,
-            fmt=PixelFormat.BGR
-            )
-        print(f"Virtual camera started: {cam.device}")
-
         display_text = "No hand"
         if result.multi_hand_landmarks:
             hand_lms = result.multi_hand_landmarks[0].landmark
@@ -138,19 +140,20 @@ def main():
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 cv2.circle(frame, (cx, cy), 2, (255, 0, 0), -1)
 
+        # Flip the frame for mirror effect (horizontal flip)
+        frame = cv2.flip(frame, 1)
+        
+        # Draw text AFTER flipping so it appears in correct position
         cv2.putText(frame, display_text, (20, 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 255, 0), 2, cv2.LINE_AA)
         
-        #send to camera output
+        # Send frame to virtual camera (for Google Meetings, OBS, etc)
         cam.send(frame)
         cam.sleep_until_next_frame()
 
-        cv2.imshow("ASL V2 - MediaPipe Crop", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
-
     hands.close()
     cap.release()
+    cam.close()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
