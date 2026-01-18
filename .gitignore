@@ -63,6 +63,7 @@ models/translator/
 
 # Legacy model location (old structure)
 vosk-model-small-en-us-0.15/
+models
 
 # Node.js
 node_modules/
