@@ -53,7 +53,15 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
-# Vosk model
+# Models directory - contains large downloaded models
+models/vosk/
+models/translator/
+# Keep the directory structure
+!models/.gitkeep
+!models/vosk/.gitkeep
+!models/translator/.gitkeep
+
+# Legacy model location (old structure)
 vosk-model-small-en-us-0.15/
 models
 
