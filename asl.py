@@ -14,6 +14,9 @@ import numpy as np
 from collections import Counter
 import mediapipe as mp
 import tensorflow as tf
+import pyvirtualcam
+import pyttsx3
+import threading
 
 # --------------- CONFIG ---------------
 MODEL_PATH = "wlasl_demo.keras"     # or "wlasl_savedmodel" if you exported SavedModel folder
@@ -33,12 +36,51 @@ HAND_RATIO_THRESH = 0.6 # require hands present in >=60% of last 30 frames
 CLEAR_IDLE_SECONDS = 10.0
 
 # --------------- LOAD MODEL + LABELS ---------------
+print("Loading model...")
 model = tf.keras.models.load_model(MODEL_PATH)
+print("Model loaded successfully!")
+print("Loading actions...")
 with open(ACTIONS_PATH, "r") as f:
     actions = json.load(f)
 
 print("Loaded model:", MODEL_PATH)
 print("Classes:", actions)
+
+# --------------- TEXT-TO-SPEECH SETUP ---------------
+print("Initializing text-to-speech...")
+tts_engine = pyttsx3.init()
+
+# Set voice to Samantha
+voices = tts_engine.getProperty('voices')
+samantha_voice = None
+for voice in voices:
+    if 'samantha' in voice.name.lower():
+        samantha_voice = voice
+        break
+
+if samantha_voice:
+    tts_engine.setProperty('voice', samantha_voice.id)
+    print(f"Using voice: {samantha_voice.name}")
+else:
+    print("Warning: Samantha voice not found, using default voice")
+    print(f"Available voices: {[v.name for v in voices]}")
+
+# Configure TTS properties (optional - adjust as needed)
+tts_engine.setProperty('rate', 150)  # Speed of speech
+tts_engine.setProperty('volume', 1.0)  # Volume (0.0 to 1.0)
+print("Text-to-speech initialized!")
+
+def speak_text(text):
+    """Speak text in a separate thread to avoid blocking video processing"""
+    def _speak():
+        try:
+            tts_engine.say(text)
+            tts_engine.runAndWait()
+        except Exception as e:
+            print(f"TTS error: {e}")
+    
+    thread = threading.Thread(target=_speak, daemon=True)
+    thread.start()
 
 # --------------- MEDIAPIPE SETUP ---------------
 mp_holistic = mp.solutions.holistic
@@ -128,7 +170,25 @@ def update_prediction(probs):
     return "", actions[maj], conf
 
 # --------------- WEBCAM LOOP ---------------
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2, cv2.CAP_AVFOUNDATION)
+
+# Get webcam resolution for virtual camera
+ret, test_frame = cap.read()
+if not ret or test_frame is None:
+    print("Error: Could not read from webcam")
+    exit(1)
+height, width = test_frame.shape[:2]
+cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset to beginning
+
+# Create virtual camera
+virtual_cam = None
+try:
+    print(f"Creating virtual camera with resolution {width}x{height}...")
+    virtual_cam = pyvirtualcam.Camera(width=width, height=height, fps=30)
+    print(f"Virtual camera created: {virtual_cam.device}")
+except Exception as e:
+    print(f"Warning: Could not create virtual camera: {e}")
+    print("Continuing without virtual camera output...")
 
 sequence = []
 sentence = []
@@ -173,7 +233,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             sequence.clear()
             reset_prediction_state()
 
-            live_label = "Idle (no hands)"
+            live_label = "Idle (no hands visible)"
             live_conf = 0.0
 
         else:
@@ -187,7 +247,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             sequence.append(keypoints)
             sequence = sequence[-SEQUENCE_LENGTH:]
 
-            live_label = "Warming up..."
+            live_label = "Reading sign..."
             live_conf = 0.0
 
             hands_enough = (sum(hand_history) / len(hand_history)) >= HAND_RATIO_THRESH
@@ -200,8 +260,14 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
                 if committed:
                     sentence.append(committed)
                     sentence = sentence[-5:]
+                    # Speak the committed word
+                    speak_text(committed)
 
         # --------------- UI OVERLAY ---------------
+        # Maybe hide this for the final version.
+        # Flip image to draw text mirrored, then flip back so video is normal
+        image = cv2.flip(image, 1)
+        
         h, w = image.shape[:2]
         cv2.rectangle(image, (0, 0), (w, 110), (0, 0, 0), -1)
 
@@ -230,7 +296,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             remaining = max(0.0, CLEAR_IDLE_SECONDS - (now - last_hand_time))
             cv2.putText(
                 image,
-                f"Idle reset in: {remaining:.1f}s",
+                f"Words reset in: {remaining:.1f}s",
                 (10, 100),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
@@ -238,10 +304,21 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
                 2
             )
 
-        cv2.imshow("WLASL Real-time Demo (hands-gated)", image)
+        # Flip back so video is normal orientation but text remains mirrored
+        image = cv2.flip(image, 1)
+
+        # cv2.imshow("WLASL Real-time Demo (hands-gated)", image)
+
+        # Send frame to virtual camera (convert BGR to RGB)
+        if virtual_cam is not None:
+            frame_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            virtual_cam.send(frame_rgb)
+            virtual_cam.sleep_until_next_frame()
 
         if cv2.waitKey(10) & 0xFF == ord("q"):
             break
 
 cap.release()
+if virtual_cam is not None:
+    virtual_cam.close()
 cv2.destroyAllWindows()
