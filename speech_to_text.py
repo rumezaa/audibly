@@ -103,7 +103,7 @@ DEVICE = None  # Change to device index (int) or device name (str) to use extern
 if platform.system() == "Windows":
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # DirectShow on Windows, index 0 is default camera
 elif platform.system() == "Darwin":  # macOS
-    cap = cv2.VideoCapture(1, cv2.CAP_AVFOUNDATION)
+    cap = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
 else:  # Linux
     cap = cv2.VideoCapture(0)
 
