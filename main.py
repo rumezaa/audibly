@@ -20,11 +20,11 @@ COLORS = {
 
 # Global variables for process management
 speech_process = None
+asl_process = None
 is_running = False
+is_asl_running = False
 manual_stop = False  # Track if process was stopped manually
-
-def run_sign_language():
-    print("Running sign language")
+manual_asl_stop = False  # Track if ASL process was stopped manually
 
 def update_status(message, color=None):
     """Update the status label with a message"""
@@ -35,11 +35,16 @@ def update_status(message, color=None):
 
 def update_button_state():
     """Update button text and command based on running state"""
-    global is_running
+    global is_running, is_asl_running
     if is_running:
         btn_speech.config(text="Stop Speech-to-Text", command=stop_speech_to_text, state='normal')
     else:
         btn_speech.config(text="Speech-to-Text", command=run_speech_to_text, state='normal')
+    
+    if is_asl_running:
+        btn_sign.config(text="Stop Sign Language-to-Text", command=stop_sign_language, state='normal')
+    else:
+        btn_sign.config(text="Sign Language-to-Text", command=run_sign_language, state='normal')
 
 def stop_speech_to_text():
     """Stop the running speech to text process"""
@@ -78,11 +83,138 @@ def stop_speech_to_text():
         btn_sign.config(state='normal')
         update_button_state()
 
+def stop_sign_language():
+    """Stop the running ASL to text process"""
+    global asl_process, is_asl_running, manual_asl_stop
+    
+    if not asl_process or not is_asl_running:
+        return
+    
+    # Set manual stop flag to prevent monitor_process from updating UI
+    manual_asl_stop = True
+    
+    # Update GUI to show it's stopping
+    update_status("Stopping ASL translation...", COLORS['warning'])
+    btn_sign.config(state='disabled')
+    
+    try:
+        # Terminate the process gracefully
+        asl_process.terminate()
+        asl_process.wait(timeout=2)
+    except Exception:
+        # Force kill if terminate didn't work or process already ended
+        try:
+            asl_process.kill()
+            asl_process.wait()
+        except:
+            pass  # Process may have already ended
+    finally:
+        # Reset state
+        is_asl_running = False
+        asl_process = None
+        manual_asl_stop = False
+        
+        # Update UI
+        update_status("ASL translation stopped", COLORS['gray'])
+        btn_sign.config(state='normal')
+        btn_speech.config(state='normal')
+        update_button_state()
+
+def run_sign_language():
+    """Run the ASL to text script and update GUI status"""
+    global asl_process, is_asl_running, manual_asl_stop, is_running
+    
+    if is_asl_running:
+        return
+    
+    # Don't allow both to run at the same time
+    if is_running:
+        update_status("Please stop speech-to-text first", COLORS['warning'])
+        return
+    
+    # Reset manual stop flag
+    manual_asl_stop = False
+    
+    # Update GUI to show it's starting
+    update_status("Starting ASL translation...", COLORS['warning'])
+    btn_sign.config(state='disabled')
+    btn_speech.config(state='disabled')
+    
+    # Get the script path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_path = os.path.join(script_dir, 'asl.py')
+    
+    def run_script():
+        global asl_process, is_asl_running
+        try:
+            is_asl_running = True
+            update_status("ASL translation is starting...", COLORS['success'])
+            
+            # Run the script (runs continuously, so don't wait for completion)
+            asl_process = subprocess.Popen(
+                [sys.executable, script_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            
+            # Give it a moment to start, then check if process is running
+            import time
+            time.sleep(0.5)  # Brief delay to let process start
+            
+            if asl_process.poll() is None:
+                # Process is running
+                update_status("✓ ASL translation is active - virtual camera is live!", COLORS['success'])
+                # Update button to show stop option
+                update_button_state()
+            else:
+                # Process failed to start or exited immediately
+                update_status("Error: Failed to start ASL translation", '#ef4444')
+                is_asl_running = False
+                asl_process = None
+                btn_sign.config(state='normal')
+                btn_speech.config(state='normal')
+                update_button_state()
+            
+            # Monitor process in background
+            def monitor_process():
+                global asl_process, is_asl_running, manual_asl_stop
+                if asl_process:
+                    asl_process.wait()  # Wait for process to end
+                    # Only update UI if process ended naturally (not manually stopped)
+                    if not manual_asl_stop:
+                        is_asl_running = False
+                        asl_process = None
+                        update_status("ASL translation stopped", COLORS['gray'])
+                        btn_sign.config(state='normal')
+                        btn_speech.config(state='normal')
+                        update_button_state()
+            
+            monitor_thread = threading.Thread(target=monitor_process, daemon=True)
+            monitor_thread.start()
+            
+        except Exception as e:
+            update_status(f"Error starting ASL translation: {str(e)}", '#ef4444')
+            is_asl_running = False
+            asl_process = None
+            btn_sign.config(state='normal')
+            btn_speech.config(state='normal')
+            update_button_state()
+    
+    # Run in a separate thread to avoid blocking GUI
+    thread = threading.Thread(target=run_script, daemon=True)
+    thread.start()
+
 def run_speech_to_text():
     """Run the speech to text script and update GUI status"""
-    global speech_process, is_running, manual_stop
+    global speech_process, is_running, manual_stop, is_asl_running
     
     if is_running:
+        return
+    
+    # Don't allow both to run at the same time
+    if is_asl_running:
+        update_status("Please stop ASL translation first", COLORS['warning'])
         return
     
     # Reset manual stop flag
@@ -162,8 +294,30 @@ def run_speech_to_text():
 root = tk.Tk()
 root.title("Audibly")
 root.geometry("500x400")
-root.resizable(False, False)
+root.resizable(True, True)  # Allow resizing
 root.configure(bg=COLORS['bg'])
+
+# Fullscreen state
+is_fullscreen = False
+
+def toggle_fullscreen(event=None):
+    """Toggle fullscreen mode"""
+    global is_fullscreen
+    is_fullscreen = not is_fullscreen
+    root.attributes('-fullscreen', is_fullscreen)
+    return "break"
+
+def exit_fullscreen(event=None):
+    """Exit fullscreen mode"""
+    global is_fullscreen
+    if is_fullscreen:
+        is_fullscreen = False
+        root.attributes('-fullscreen', False)
+    return "break"
+
+# Bind F11 to toggle fullscreen and Escape to exit fullscreen
+root.bind('<F11>', toggle_fullscreen)
+root.bind('<Escape>', exit_fullscreen)
 
 # Configure style
 style = ttk.Style()
@@ -257,6 +411,9 @@ status_label = tk.Label(
 )
 status_label.pack(pady=(15, 0))
 
+# Initialize button states
+update_button_state()
+
 # Center the window on screen
 root.update_idletasks()
 width = root.winfo_width()
@@ -267,14 +424,27 @@ root.geometry(f'{width}x{height}+{x}+{y}')
 
 # Handle window close - cleanup process if running
 def on_closing():
-    global speech_process, is_running, manual_stop
+    global speech_process, asl_process, is_running, is_asl_running, manual_stop, manual_asl_stop
     if speech_process and is_running:
         manual_stop = True  # Prevent monitor_process from updating UI
         try:
             speech_process.terminate()
             speech_process.wait(timeout=2)
         except:
-            speech_process.kill()
+            try:
+                speech_process.kill()
+            except:
+                pass
+    if asl_process and is_asl_running:
+        manual_asl_stop = True  # Prevent monitor_process from updating UI
+        try:
+            asl_process.terminate()
+            asl_process.wait(timeout=2)
+        except:
+            try:
+                asl_process.kill()
+            except:
+                pass
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
