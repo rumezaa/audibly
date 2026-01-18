@@ -1,0 +1,10 @@
+numpy>=1.26,<2.0
+tensorflow==2.15.*
+ml-dtypes<0.4
+mediapipe==0.10.14
+opencv-python>=4.8
+
+
+# pip uninstall -y tensorflow
+# pip install tensorflow-macos==2.15.* tensorflow-metal
+# use this if ur on apple silicon
