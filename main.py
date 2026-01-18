@@ -197,12 +197,23 @@ def run_sign_language():
                 try:
                     stdout, stderr = asl_process.communicate(timeout=1)
                     error_msg = stderr.strip() if stderr else stdout.strip() if stdout else "Unknown error"
-                    # Truncate long error messages
-                    if len(error_msg) > 100:
-                        error_msg = error_msg[:100] + "..."
+                    
+                    # Print to console (terminal where main.py was launched)
+                    print("\n" + "="*60)
+                    print("ASL Translation Failed to Start:")
+                    print("="*60)
+                    if stderr:
+                        print("STDERR:", stderr)
+                    if stdout:
+                        print("STDOUT:", stdout)
+                    print("="*60 + "\n")
+                    
+                    # Truncate long error messages for GUI
+                    if len(error_msg) > 120:
+                        error_msg = error_msg[:120] + "..."
                     update_status(f"Error: {error_msg}", '#ef4444')
                 except:
-                    update_status("Error: Failed to start ASL translation", '#ef4444')
+                    update_status("Error: Failed to start ASL translation (see terminal)", '#ef4444')
                 is_asl_running = False
                 asl_process = None
                 btn_sign.config(state='normal')
@@ -218,7 +229,28 @@ def run_sign_language():
                     if not manual_asl_stop:
                         # Check return code - if non-zero, there was an error
                         if asl_process.returncode != 0:
-                            update_status("ASL translation stopped with an error (check console)", '#ef4444')
+                            # Try to read error output
+                            try:
+                                # Read any remaining output
+                                stdout, stderr = asl_process.communicate(timeout=0.5)
+                                error_msg = stderr.strip() if stderr else stdout.strip() if stdout else "Unknown error"
+                                
+                                # Print to console (terminal where main.py was launched)
+                                print("\n" + "="*60)
+                                print("ASL Translation Error:")
+                                print("="*60)
+                                if stderr:
+                                    print("STDERR:", stderr)
+                                if stdout:
+                                    print("STDOUT:", stdout)
+                                print("="*60 + "\n")
+                                
+                                # Show error in GUI (truncate if too long)
+                                if len(error_msg) > 120:
+                                    error_msg = error_msg[:120] + "..."
+                                update_status(f"Error: {error_msg}", '#ef4444')
+                            except:
+                                update_status("ASL translation stopped with an error (see terminal)", '#ef4444')
                         else:
                             update_status("ASL translation stopped", COLORS['gray'])
                         is_asl_running = False
