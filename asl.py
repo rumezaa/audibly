@@ -27,13 +27,16 @@ FEATURE_DIM = 258
 
 # Prediction gating / smoothing
 WINDOW = 10             # majority vote window over last WINDOW predictions
-IDLE_THRESH = 0.45      # if max prob < this => idle (no output)
-COMMIT_THRESH = 0.65    # need >= this to commit a word
-HOLD_TIME = 0.6         # seconds stable before committing
-HAND_RATIO_THRESH = 0.6 # require hands present in >=60% of last 30 frames
+IDLE_THRESH = 0.4      # if max prob < this => idle (no output)
+COMMIT_THRESH = 0.5    # need >= this to commit a word
+HOLD_TIME = 0.5         # seconds stable before committing
+HAND_RATIO_THRESH = 0.5 # require hands present in >=% of last 30 frames
 
 # Sentence reset if hands are down
 CLEAR_IDLE_SECONDS = 10.0
+
+# Allow word repeats after this duration (shorter than CLEAR_IDLE_SECONDS)
+REPEAT_DELAY_SECONDS = 5.0  # seconds before same word can be committed again
 
 # --------------- LOAD MODEL + LABELS ---------------
 print("Loading model...")
@@ -70,12 +73,16 @@ tts_engine.setProperty('rate', 150)  # Speed of speech
 tts_engine.setProperty('volume', 1.0)  # Volume (0.0 to 1.0)
 print("Text-to-speech initialized!")
 
+# Lock to prevent concurrent TTS calls
+tts_lock = threading.Lock()
+
 def speak_text(text):
     """Speak text in a separate thread to avoid blocking video processing"""
     def _speak():
         try:
-            tts_engine.say(text)
-            tts_engine.runAndWait()
+            with tts_lock:  # Only one thread can use TTS at a time
+                tts_engine.say(text)
+                tts_engine.runAndWait()
         except Exception as e:
             print(f"TTS error: {e}")
     
@@ -118,6 +125,7 @@ def hands_present(results):
 # --------------- SMOOTHING STATE ---------------
 pred_hist = []
 last_commit = None
+last_commit_time = None  # Track when last commit happened
 hold_label = None
 hold_start = None
 
@@ -131,7 +139,7 @@ def update_prediction(probs):
     """
     Returns: (committed_word_or_empty_string, live_label, live_conf)
     """
-    global pred_hist, last_commit, hold_label, hold_start
+    global pred_hist, last_commit, last_commit_time, hold_label, hold_start
 
     pred = int(np.argmax(probs))
     conf = float(probs[pred])
@@ -163,8 +171,10 @@ def update_prediction(probs):
 
     if (now - hold_start) >= HOLD_TIME:
         word = actions[maj]
-        if word != last_commit:
+        # Allow repeat if enough time has passed since last commit
+        if word != last_commit or (last_commit_time is not None and (now - last_commit_time) >= REPEAT_DELAY_SECONDS):
             last_commit = word
+            last_commit_time = now
             return word, actions[maj], conf
 
     return "", actions[maj], conf
@@ -205,7 +215,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         now = time.time()
 
         image, results = mediapipe_detection(frame, holistic)
-        draw_landmarks(image, results)
+        # draw_landmarks(image, results) # No need to draw landmarks for the final version
 
         has_hands = hands_present(results)
 
@@ -214,7 +224,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         hand_history = hand_history[-SEQUENCE_LENGTH:]
 
         committed = ""
-        live_label = "Idle"
+        live_label = "Reading..."
         live_conf = 0.0
 
         if not has_hands:
@@ -228,12 +238,13 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             if idle_for >= CLEAR_IDLE_SECONDS:
                 sentence.clear()
                 last_commit = None  # allow repeats after a long idle
+                last_commit_time = None
                 reset_prediction_state()
 
             sequence.clear()
             reset_prediction_state()
 
-            live_label = "Idle (no hands visible)"
+            live_label = "(no hands visible)"
             live_conf = 0.0
 
         else:
@@ -247,7 +258,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             sequence.append(keypoints)
             sequence = sequence[-SEQUENCE_LENGTH:]
 
-            live_label = "Reading sign..."
+            live_label = "Reading..."
             live_conf = 0.0
 
             hands_enough = (sum(hand_history) / len(hand_history)) >= HAND_RATIO_THRESH
@@ -269,12 +280,17 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         image = cv2.flip(image, 1)
         
         h, w = image.shape[:2]
-        cv2.rectangle(image, (0, 0), (w, 110), (0, 0, 0), -1)
+        
+        # Create overlay for semi-transparent rectangle at bottom
+        overlay = image.copy()
+        cv2.rectangle(overlay, (0, h - 110), (w, h), (0, 0, 0), -1)
+        alpha = 0.5  # Transparency: 0.0 = fully transparent, 1.0 = fully opaque
+        cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
         cv2.putText(
             image,
-            f"Live: {live_label} ({live_conf:.2f})",
-            (10, 30),
+            f"Current word: {live_label}",
+            (10, h - 75),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
             (255, 255, 255),
@@ -283,31 +299,16 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
 
         cv2.putText(
             image,
-            "Committed: " + " ".join(sentence),
-            (10, 65),
+            "Previous words: " + " ".join(sentence),
+            (10, h - 25),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.8,
+            1.2,
             (255, 255, 255),
             2
         )
-
-        # Visual hint: countdown while hands are down
-        if last_hand_time is not None:
-            remaining = max(0.0, CLEAR_IDLE_SECONDS - (now - last_hand_time))
-            cv2.putText(
-                image,
-                f"Words reset in: {remaining:.1f}s",
-                (10, 100),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (180, 180, 180),
-                2
-            )
 
         # Flip back so video is normal orientation but text remains mirrored
         image = cv2.flip(image, 1)
-
-        # cv2.imshow("WLASL Real-time Demo (hands-gated)", image)
 
         # Send frame to virtual camera (convert BGR to RGB)
         if virtual_cam is not None:
