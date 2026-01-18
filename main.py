@@ -158,6 +158,13 @@ def run_sign_language():
     # Get the script path
     script_dir = os.path.dirname(os.path.abspath(__file__))
     script_path = os.path.join(script_dir, 'asl.py')
+    
+    # Verify script exists
+    if not os.path.exists(script_path):
+        update_status(f"Error: asl.py not found at {script_path}", '#ef4444')
+        btn_sign.config(state='normal')
+        btn_speech.config(state='normal')
+        return
 
     def run_script():
         global asl_process, is_asl_running
@@ -166,11 +173,13 @@ def run_sign_language():
             update_status("ASL translation is starting...", COLORS['success'])
 
             # Run the script (runs continuously, so don't wait for completion)
+            # Set cwd to script_dir so relative paths in asl.py work correctly
             asl_process = subprocess.Popen(
                 [sys.executable, script_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                cwd=script_dir
             )
 
             # Give it a moment to start, then check if process is running
@@ -184,7 +193,16 @@ def run_sign_language():
                 update_button_state()
             else:
                 # Process failed to start or exited immediately
-                update_status("Error: Failed to start ASL translation", '#ef4444')
+                # Read error output to show what went wrong
+                try:
+                    stdout, stderr = asl_process.communicate(timeout=1)
+                    error_msg = stderr.strip() if stderr else stdout.strip() if stdout else "Unknown error"
+                    # Truncate long error messages
+                    if len(error_msg) > 100:
+                        error_msg = error_msg[:100] + "..."
+                    update_status(f"Error: {error_msg}", '#ef4444')
+                except:
+                    update_status("Error: Failed to start ASL translation", '#ef4444')
                 is_asl_running = False
                 asl_process = None
                 btn_sign.config(state='normal')
@@ -198,9 +216,13 @@ def run_sign_language():
                     asl_process.wait()  # Wait for process to end
                     # Only update UI if process ended naturally (not manually stopped)
                     if not manual_asl_stop:
+                        # Check return code - if non-zero, there was an error
+                        if asl_process.returncode != 0:
+                            update_status("ASL translation stopped with an error (check console)", '#ef4444')
+                        else:
+                            update_status("ASL translation stopped", COLORS['gray'])
                         is_asl_running = False
                         asl_process = None
-                        update_status("ASL translation stopped", COLORS['gray'])
                         btn_sign.config(state='normal')
                         btn_speech.config(state='normal')
                         update_button_state()
