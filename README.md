@@ -142,29 +142,6 @@ You can modify settings in `asl.py`:
 
 Language models are automatically downloaded on first use. Models are stored locally and reused for subsequent sessions.
 
-## Troubleshooting
-
-### "tkinter is not available" Error
-- Ensure you're using a Python version with tkinter support
-- On macOS, you may need to install tkinter: `brew install python-tk@3.12`
-- Or use a different Python version: `python3 main.py`
-
-### "ASL translation stopped with an error"
-- Check the terminal/console where you ran `main.py` for detailed error messages
-- Ensure `wlasl_demo.keras` and `actions.json` are in the project root directory
-- Verify your webcam is connected and accessible
-- Check that all dependencies are installed: `pip install -r requirements.txt`
-
-### Virtual Camera Not Working
-- Ensure `pyvirtualcam` is installed: `pip install pyvirtualcam`
-- On macOS, you may need to grant camera permissions to your terminal/Python
-- Try restarting your video conferencing application after starting Audibly
-
-### Model Files Missing
-- Ensure `wlasl_demo.keras` is in the project root
-- Ensure `actions.json` is in the project root
-- Check that file paths in `asl.py` are correct
-
 ## Development
 
 ### Training Custom Sign Language Models
@@ -175,16 +152,3 @@ The `ml/` directory contains training code for custom sign language models. See 
 
 The `audibly-site/` directory contains the project website source code (React/Vite).
 
-## License
-
-[Add your license here]
-
-## Contributing
-
-[Add contribution guidelines here]
-
-## Acknowledgments
-
-- VOSK for speech recognition models
-- MediaPipe for hand and pose detection
-- WLASL dataset for sign language training data
